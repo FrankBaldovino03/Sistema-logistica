@@ -1,52 +1,90 @@
-public class Envio {
+import java.time.LocalDate;
+import java.util.UUID;
 
-     String id;
-     String origen;
-     String destino;
-     double peso;
+public abstract class Envio {
 
-        public Envio(String id, String origen, String destino, double peso) {
-            this.id = id;
-            this.origen = origen;
-            this.destino = destino;
-            this.peso = peso;
-        }
+    protected String id;
+    protected String origen;
+    protected String destino;
+    protected double peso; // en kilogramos
+    protected String prioridad; // Ejemplo: "ALTA", "MEDIA", "BAJA"
+    protected LocalDate fechaEnvio;
+    protected String estado; // Ejemplo: "PENDIENTE", "EN TRÁNSITO", "ENTREGADO"
+    protected String tipoEnvio; // Ejemplo: "NACIONAL", "INTERNACIONAL"
 
-        public String getId() {
-            return id;
-        }
+    /**
+     * Constructor base para inicializar un envío.
+     */
+    public Envio(String origen, String destino, double peso, String prioridad, String tipoEnvio) {
+        if (origen == null || origen.isBlank()) throw new IllegalArgumentException("El origen no puede ser vacío.");
+        if (destino == null || destino.isBlank()) throw new IllegalArgumentException("El destino no puede ser vacío.");
+        if (peso <= 0) throw new IllegalArgumentException("El peso debe ser mayor a 0.");
 
-        public void setId(String id) {
-            this.id = id;
-        }
+        this.id = generarNumeroSeguimiento();
+        this.origen = origen;
+        this.destino = destino;
+        this.peso = peso;
+        this.prioridad = prioridad;
+        this.estado = "PENDIENTE"; // valor por defecto
+        this.fechaEnvio = LocalDate.now();
+        this.tipoEnvio = tipoEnvio;
+    }
 
-        public String getOrigen() {
-            return origen;
-        }
+    // ======== MÉTODOS ABSTRACTOS ========
 
-        public void setOrigen(String origen) {
-            this.origen = origen;
-        }
+    /** Calcula el costo total del envío. */
+    public abstract double calcularCosto();
 
-        public String getDestino() {
-            return destino;
-        }
+    /** Calcula el tiempo estimado de entrega (en días). */
+    public abstract int calcularTiempoEntrega();
 
-        public void setDestino(String destino) {
-            this.destino = destino;
-        }
+    /** Devuelve detalles específicos del tipo de envío. */
+    public abstract String obtenerDetallesEspecificos();
 
-        public double getPeso() {
-            return peso;
-        }
+    // ======== MÉTODOS CONCRETOS ========
 
-        @Override
-        public String toString() {
-            return "Envio [id=" + id + ", origen=" + origen + ", destino=" + destino + ", peso=" + peso + "]";
-        }
+    /** Genera un número de seguimiento único basado en UUID. */
+    public String generarNumeroSeguimiento() {
+        return tipoEnvio.charAt(0) + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
 
-        public void setPeso(double peso) {
-            this.peso = peso;
-        }
+    /** Actualiza el estado actual del envío. */
+    public void actualizarEstado(String nuevoEstado) {
+        if (nuevoEstado == null || nuevoEstado.isBlank())
+            throw new IllegalArgumentException("El estado no puede ser vacío.");
+        this.estado = nuevoEstado;
+    }
 
+    // ======== GETTERS Y SETTERS ========
+
+    public String getId() { return id; }
+    public String getOrigen() { return origen; }
+    public String getDestino() { return destino; }
+    public double getPeso() { return peso; }
+    public String getPrioridad() { return prioridad; }
+    public String getEstado() { return estado; }
+    public LocalDate getFechaEnvio() { return fechaEnvio; }
+    public String getTipoEnvio() { return tipoEnvio; }
+
+    public void setPeso(double peso) {
+        if (peso <= 0) throw new IllegalArgumentException("El peso debe ser mayor a 0.");
+        this.peso = peso;
+    }
+
+    // ======== MÉTODO toString() ========
+
+    @Override
+    public String toString() {
+        return "Envio{" +
+                "id='" + id + '\'' +
+                ", origen='" + origen + '\'' +
+                ", destino='" + destino + '\'' +
+                ", peso=" + peso +
+                ", prioridad='" + prioridad + '\'' +
+                ", estado='" + estado + '\'' +
+                ", fechaEnvio=" + fechaEnvio +
+                ", tipoEnvio='" + tipoEnvio + '\'' +
+                ", detalles=" + obtenerDetallesEspecificos() +
+                '}';
+    }
 }
