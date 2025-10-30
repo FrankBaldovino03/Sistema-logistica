@@ -21,33 +21,35 @@ public class EnvioTerrestre extends Envio {
     }
 
 
-    @Override
-    public double calcularCosto() {
-        double costo = COSTO_POR_KG * getPeso();
+   @Override
+public double calcularCosto() {
+    double costo = COSTO_POR_KG * getPeso();
 
-        double unidades100km = Math.ceil(distanciaKm / 100.0);
-        costo += unidades100km * COSTO_POR_100KM;
+    double unidades100km = Math.ceil(distanciaKm / 100.0);
+    costo += unidades100km * COSTO_POR_100KM;
 
-       
-        if ("EXPRESS".equalsIgnoreCase(getPrioridad())) {
-            costo += costo * RECARGO_EXPRESS;
-        }
-
-        return Math.round(costo); // Redondea el resultado
+    // ✅ Comparación correcta de Strings
+    if ("EXPRESS".equalsIgnoreCase(getPrioridad())) {
+        costo += costo * RECARGO_EXPRESS;
     }
 
-    @Override
-    public int calcularTiempoEntrega() {
-        return (int) Math.max(1, Math.ceil(distanciaKm / 500.0));
-    }
+    return Math.round(costo); // ✅ Redondea el resultado
+}
 
-    @Override
-    public String obtenerDetallesEspecificos() {
-        return "Terrestre { distanciaKm = " + distanciaKm +
-               ", tiempoEstimadoDias = " + calcularTiempoEntrega() + " }";
-    }
+@Override
+public int calcularTiempoEntrega() {
+    // ✅ Corrección: “a:1” no existe → era un error de sintaxis
+    return (int) Math.max(1, Math.ceil(distanciaKm / 500.0));
+}
 
-    public double getDistanciaKm() {
-        return distanciaKm;
-    }
+@Override
+public String obtenerDetallesEspecificos() {
+    return "Terrestre { distanciaKm = " + distanciaKm +
+           ", tiempoEstimadoDias = " + calcularTiempoEntrega() + " }";
+}
+
+public double getDistanciaKm() {
+    return distanciaKm;
+}
+
 }
